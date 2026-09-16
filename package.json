@@ -1,0 +1,13 @@
+{
+  "name": "found-portable-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "train:conversation": "node portable/train-conversation.mjs",
+    "checkpoint": "node portable/checkpoint.mjs",
+    "verify": "node portable/verify.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

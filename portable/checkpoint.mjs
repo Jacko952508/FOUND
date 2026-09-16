@@ -1,0 +1,5 @@
+import { query, close } from "./db.mjs";
+const state=(await query("SELECT id,generation,epoch,status,contexts_learned,associations_learned,length(coalesce(neural_json,'')) neural_bytes,length(coalesce(conversation_rnn_json,'')) rnn_bytes,length(coalesce(conversation_memory_json,'')) memory_bytes,updated_at FROM found_model_state ORDER BY id LIMIT 1")).rows[0];
+const counts=(await query("SELECT (SELECT count(*) FROM found_discoveries)::int discoveries,(SELECT count(*) FROM found_unverified)::int unverified,(SELECT count(*) FROM found_chat)::int chats,(SELECT count(*) FROM found_conversation_teacher)::int teacher_rows,(SELECT count(*) FROM found_model_versions)::int model_versions")).rows[0];
+console.log(JSON.stringify({ok:true,state,counts,at:new Date().toISOString()},null,2));
+await close();

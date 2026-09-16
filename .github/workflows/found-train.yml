@@ -1,0 +1,31 @@
+name: FOUND Conversation Train
+on:
+  workflow_dispatch:
+concurrency:
+  group: found-conversation-train
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - name: Checkpoint before training
+        env:
+          DATABASE_URL: ${{ secrets.FOUND_DATABASE_URL }}
+        run: npm run checkpoint
+      - name: Train bounded conversation batch
+        env:
+          DATABASE_URL: ${{ secrets.FOUND_DATABASE_URL }}
+          TRAIN_PAIRS: "220"
+        run: npm run train:conversation
+      - name: Verify trained model
+        env:
+          DATABASE_URL: ${{ secrets.FOUND_DATABASE_URL }}
+        run: npm run verify

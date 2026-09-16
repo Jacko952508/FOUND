@@ -1,0 +1,10 @@
+import { query, close } from "./db.mjs";
+const s=(await query("SELECT generation,epoch,conversation_rnn_metrics_json,updated_at FROM found_model_state ORDER BY id LIMIT 1")).rows[0];
+if(!s) throw new Error("No model state");
+const m=JSON.parse(s.conversation_rnn_metrics_json||"{}");
+const problems=[];
+if(Number(m.answer_loss||999)>6) problems.push("answer_loss_high");
+if(Number(m.answer_accuracy||0)<0.05) problems.push("answer_accuracy_low");
+console.log(JSON.stringify({ok:problems.length===0,generation:s.generation,epoch:s.epoch,metrics:m,problems,updated_at:s.updated_at},null,2));
+await close();
+if(problems.length) process.exitCode=2;
